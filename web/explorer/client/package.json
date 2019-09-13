@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=local webpack-dev-server --hot --inline  --port 8000 --host 0.0.0.0 --output-public-path=/ --content-base build/",
+    "start": "NODE_ENV=local webpack-dev-server --hot --inline  --port 7000 --host 0.0.0.0 --output-public-path=/ --content-base build/",
     "build": "webpack -p -d",
     "test": "./node_modules/webdriverio/bin/wdio ./wdio.conf.js"
   },

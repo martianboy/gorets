@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
+	"net/url"
 
 	"github.com/jpfielding/gorets/pkg/rets"
 	"github.com/jpfielding/gowirelog/wirelog"
@@ -28,15 +30,29 @@ type Config struct {
 func (c Config) Connect(ctx context.Context, wlog io.Writer) (*Session, error) {
 	// start with the default Dialer from http.DefaultTransport
 	transport := wirelog.NewHTTPTransport()
+
 	// if there is a need to proxy
 	if c.Proxy != "" {
 		log.Printf("Using proxy %s", c.Proxy)
-		d, err := proxy.SOCKS5("tcp", c.Proxy, nil, proxy.Direct)
+
+		u, err := url.Parse(c.Proxy)
 		if err != nil {
 			return nil, fmt.Errorf("rets proxy: %v", err)
 		}
-		transport.Dial = d.Dial
+
+		if u.Scheme == "http" || u.Scheme == "https" {
+			transport.Proxy = http.ProxyURL(u)
+		}
+
+		if u.Scheme == "socks5" {
+			d, err := proxy.FromURL(u, proxy.Direct)
+			if err != nil {
+				return nil, fmt.Errorf("rets proxy: %v", err)
+			}
+			transport.Dial = d.Dial
+		}
 	}
+
 	// wire logging
 	if wlog != nil {
 		err := wirelog.LogToWriter(transport, wlog, true, true)

@@ -12,7 +12,7 @@ build-explorer-svc:
 	CGO_ENABLED=0 GOOS=linux go build -o bin/explorer/explorer cmd/explorer/*.go
 
 build-explorer-client:
-	cd web/explorer/client && npm install && CONFIG_ENV=$(CONFIG_ENV) npm run build
+	cd web/explorer/client && npm install --production && CONFIG_ENV=$(CONFIG_ENV) npm run build
 
 build-explorer-copy-files:
 	cp build/explorer/Dockerfile bin/explorer
